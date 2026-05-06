@@ -1,15 +1,27 @@
 {
-  "name": "PANASUR Fotocheck",
+  "name": "Fotocheck PANASUR — Hanaqpampa",
   "short_name": "Fotocheck",
-  "description": "Captura de fotocheck — Proyecto Hanaqpampa",
+  "description": "Captura de credenciales SSOMA — Proyecto Acceso Principal CSF Hanaqpampa",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#1F3864",
   "background_color": "#1F3864",
   "lang": "es-PE",
+  "categories": ["business", "productivity"],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzFGMzg2NCIgcng9IjI0Ii8+PHRleHQgeD0iOTYiIHk9IjEyMCIgZm9udC1mYW1pbHk9IkFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNzQiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiNGRkMwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBTPC90ZXh0Pjx0ZXh0IHg9Ijk2IiB5PSIxNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5GT1RPQ0hFQ0s8L3RleHQ+PC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzFGMzg2NCIgcng9IjY0Ii8+PHRleHQgeD0iMjU2IiB5PSIzMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIwMCIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iI0ZGQzAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UFM8L3RleHQ+PHRleHQgeD0iMjU2IiB5PSI0MzAiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5GT1RPQ0hFQ0s8L3RleHQ+PHRleHQgeD0iMjU2IiB5PSI0NzAiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjRkZDMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5IQU5BUVBBTVBBPC90ZXh0Pjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }
