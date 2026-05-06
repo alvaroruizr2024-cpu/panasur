@@ -1,173 +1,855 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1F3864">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>PANASUR · Fotocheck</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#1F3864" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Fotocheck PANASUR" />
+<title>Fotocheck PANASUR — Hanaqpampa</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231F3864'/%3E%3Ctext x='50' y='62' font-family='Arial' font-size='38' font-weight='bold' fill='%23FFC000' text-anchor='middle'%3EPS%3C/text%3E%3C/svg%3E" />
+<link rel="manifest" href="manifest.json" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --navy:#1F3864;--navy-light:#2E75B6;--navy-pale:#D9E2F3;
+  --gold:#FFC000;--gold-pale:#FFF2CC;
+  --green:#548235;--green-pale:#E2EFDA;
+  --red:#C00000;--red-pale:#FCE4D6;
+  --purple:#7030A0;
+  --gray-50:#FAFAFA;--gray-100:#F2F2F2;--gray-300:#D1D5DB;--gray-500:#6B7280;--gray-700:#374151;--gray-900:#111827;
+  --shadow:0 4px 12px rgba(31,56,100,.15);
+  --radius:12px;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--gray-50);color:var(--gray-900);overscroll-behavior-y:contain}
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+.topbar{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.topbar .logo{width:36px;height:36px;border-radius:8px;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
+.topbar .titles{flex:1;min-width:0}
+.topbar h1{font-size:15px;font-weight:700;line-height:1.1}
+.topbar .sub{font-size:11px;opacity:.85;margin-top:2px}
+.topbar .status{padding:4px 8px;border-radius:20px;font-size:10px;font-weight:600;background:rgba(255,255,255,.2);display:flex;align-items:center;gap:4px}
+.status .dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 2s infinite}
+.status.offline .dot{background:#ef4444}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.app{max-width:520px;margin:0 auto;padding:0 0 24px}
+.card{background:#fff;border-radius:var(--radius);padding:16px;margin:12px;box-shadow:var(--shadow);border:1px solid #e5e7eb}
+.card h2{font-size:14px;color:var(--navy);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.3px}
+.card h2 .num{background:var(--navy);color:#fff;width:22px;height:22px;border-radius:50%;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700}
+#loginScreen{padding:24px;max-width:400px;margin:40px auto}
+#loginScreen .logo-big{width:80px;height:80px;border-radius:16px;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;margin:0 auto 16px;box-shadow:var(--shadow)}
+#loginScreen h1{text-align:center;color:var(--navy);font-size:20px;margin-bottom:4px}
+#loginScreen .sub{text-align:center;color:var(--gray-500);font-size:13px;margin-bottom:24px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+.field label .req{color:var(--red);margin-left:2px}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1.5px solid var(--gray-300);border-radius:8px;font-size:15px;background:#fff;font-family:inherit;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--navy-light);box-shadow:0 0 0 3px rgba(46,117,182,.15)}
+.field input[readonly]{background:var(--gray-100);color:var(--gray-700)}
+.field .hint{font-size:11px;color:var(--gray-500);margin-top:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:transform .1s,box-shadow .15s;font-family:inherit;width:100%;text-align:center}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(31,56,100,.3)}
+.btn-primary:hover{background:var(--navy-light)}
+.btn-secondary{background:var(--gray-100);color:var(--gray-700)}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.photo-frame{position:relative;width:100%;aspect-ratio:3/4;background:#000;border-radius:var(--radius);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow)}
+.photo-frame video,.photo-frame img,.photo-frame canvas{width:100%;height:100%;object-fit:cover;display:block}
+.photo-frame .overlay{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;color:#fff}
+.photo-frame .guide{position:absolute;top:50%;left:50%;width:65%;aspect-ratio:3/4;transform:translate(-50%,-50%);border:3px dashed rgba(255,255,255,.7);border-radius:50%/40%}
+.photo-frame .guide-label{position:absolute;bottom:12px;left:0;right:0;text-align:center;color:#fff;font-size:11px;background:rgba(0,0,0,.6);padding:6px;backdrop-filter:blur(4px)}
+.photo-frame.empty{background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--gray-500);font-size:14px;border:2px dashed var(--gray-300)}
+.photo-frame.empty .icon{font-size:42px;margin-bottom:6px;opacity:.5}
+.sig-pad{background:#fff;border:2px dashed var(--gray-300);border-radius:var(--radius);height:140px;width:100%;touch-action:none;cursor:crosshair;display:block}
+.sig-pad.signed{border-style:solid;border-color:var(--green)}
+.steps{display:flex;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:64px;z-index:50}
+.step{flex:1;text-align:center;font-size:10px;color:var(--gray-500);position:relative}
+.step::before{display:block;width:24px;height:24px;border-radius:50%;background:var(--gray-100);color:var(--gray-500);margin:0 auto 4px;line-height:24px;font-weight:700;font-size:12px;position:relative;z-index:2}
+.step:nth-child(1)::before{content:'1'}.step:nth-child(2)::before{content:'2'}.step:nth-child(3)::before{content:'3'}.step:nth-child(4)::before{content:'4'}.step:nth-child(5)::before{content:'5'}
+.step.active::before{background:var(--navy);color:#fff}
+.step.done::before{background:var(--green);color:#fff;content:'✓'}
+.step.active{color:var(--navy);font-weight:600}
+.step.done{color:var(--green)}
+.search-results{margin-top:8px;max-height:240px;overflow-y:auto;border:1px solid var(--gray-300);border-radius:8px;display:none}
+.search-results.show{display:block}
+.search-item{padding:10px 12px;border-bottom:1px solid var(--gray-100);cursor:pointer;font-size:13px}
+.search-item:hover,.search-item:active{background:var(--navy-pale)}
+.search-item:last-child{border-bottom:none}
+.search-item .name{font-weight:600;color:var(--navy)}
+.search-item .meta{font-size:11px;color:var(--gray-500);margin-top:2px}
+.search-item .badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:9px;font-weight:600;margin-left:4px}
+.badge-green{background:var(--green-pale);color:var(--green)}
+.badge-yellow{background:var(--gold-pale);color:#92400e}
+.badge-red{background:var(--red-pale);color:var(--red)}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.check{padding:8px 10px;border-radius:8px;font-size:11px;display:flex;align-items:center;gap:6px;font-weight:500}
+.check.ok{background:var(--green-pale);color:var(--green)}
+.check.fail{background:var(--red-pale);color:var(--red)}
+.check.pending{background:var(--gray-100);color:var(--gray-500)}
+.fc-preview{aspect-ratio:53.98/85.6;max-width:280px;margin:0 auto;border-radius:8px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.2);position:relative;background:#fff;border:2px solid var(--gold)}
+.fc-preview .fc-band-top{background:var(--navy);color:#fff;padding:8px 6px;text-align:center}
+.fc-preview .fc-band-top h3{font-size:11px;font-weight:800;letter-spacing:.5px}
+.fc-preview .fc-band-top .ruc{font-size:8px;opacity:.85;margin-top:2px}
+.fc-preview .fc-proj{background:var(--gold);color:var(--navy);padding:5px;text-align:center;font-size:8px;font-weight:700;line-height:1.3}
+.fc-preview .fc-photo-row{display:flex;padding:6px;gap:6px;align-items:center}
+.fc-preview .fc-photo{width:54px;height:72px;background:var(--gray-100);border:1px solid var(--gray-300);object-fit:cover;flex-shrink:0}
+.fc-preview .fc-data{flex:1;font-size:8px;line-height:1.3}
+.fc-preview .fc-data div{margin-bottom:3px}
+.fc-preview .fc-data .lbl{color:var(--navy);font-weight:700;font-size:7px;text-transform:uppercase}
+.fc-preview .fc-data .val{font-weight:600;color:#000}
+.fc-preview .fc-tipo-band{padding:3px;text-align:center;color:#fff;font-size:8px;font-weight:700;letter-spacing:.3px}
+.fc-preview .fc-bottom{display:flex;border-top:1px solid var(--gray-300)}
+.fc-preview .fc-gs{background:var(--red);color:#fff;padding:5px;flex:0 0 35%;text-align:center}
+.fc-preview .fc-gs .lbl{font-size:6px;font-weight:700}
+.fc-preview .fc-gs .val{font-size:14px;font-weight:800}
+.fc-preview .fc-emer{flex:1;padding:5px;background:var(--gray-100);text-align:center;font-size:7px;line-height:1.3}
+.fc-preview .fc-emer .tel{color:var(--red);font-weight:700;font-size:8px}
+.fc-preview .fc-num-vig{display:flex;border-top:1px solid var(--gray-300);font-size:8px}
+.fc-preview .fc-num{flex:1;padding:4px;text-align:center;border-right:1px dashed var(--gray-300)}
+.fc-preview .fc-vig{flex:1;padding:4px;text-align:center}
+.fc-preview .fc-num .lbl,.fc-preview .fc-vig .lbl{font-size:6px;color:var(--navy);font-weight:700}
+.fc-preview .fc-num .val,.fc-preview .fc-vig .val{font-weight:700}
+.fc-preview .fc-qr{position:absolute;bottom:25px;right:6px;width:36px;height:36px;background:#fff;padding:2px;border:1px solid var(--gray-300);border-radius:3px}
+.tipo-NAVY{background:var(--navy)}.tipo-LIGHT{background:var(--navy-light)}.tipo-VERDE{background:var(--green)}.tipo-DORADO{background:var(--gold);color:var(--navy)!important}.tipo-ROJO{background:var(--red)}.tipo-MORADO{background:var(--purple)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--gray-900);color:#fff;padding:12px 20px;border-radius:24px;font-size:13px;font-weight:500;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:transform .25s;max-width:90%;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--green)}.toast.error{background:var(--red)}.toast.info{background:var(--navy)}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+.gps-info{font-size:10px;color:var(--gray-500);text-align:center;padding:6px;background:var(--gray-100);border-radius:6px;margin-top:8px}
+.counter-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:12px;background:#fff;margin:12px;border-radius:var(--radius);box-shadow:var(--shadow)}
+.counter{padding:10px;border-radius:8px;text-align:center}
+.counter .num{font-size:22px;font-weight:800;color:var(--navy)}
+.counter .lbl{font-size:10px;color:var(--gray-500);text-transform:uppercase;letter-spacing:.3px;font-weight:600;margin-top:2px}
+.counter.green .num{color:var(--green)}
+.counter.gold .num{color:#92400e}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media print{body{background:#fff}.topbar,.steps,.btn,.card h2,.bottom-actions,.counter-row{display:none!important}.fc-preview{box-shadow:none;page-break-inside:avoid;max-width:100%}}
+</style>
 </head>
 <body>
 
-<!-- ================ LOGIN ================ -->
-<div id="login-screen" class="screen active">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="logo-tp">TP</div>
+<div id="loginScreen" class="card">
+  <div class="logo-big">PS</div>
+  <h1>Fotocheck PANASUR</h1>
+  <p class="sub">Captura de credenciales — Proyecto Hanaqpampa</p>
+  <div class="field">
+    <label>Operador SSOMA<span class="req">*</span></label>
+    <select id="loginOperador">
+      <option value="">— Seleccionar —</option>
+      <option>Ing. Alvaro Ruiz Reyna — Jefe SSOMA</option>
+      <option>Asistente SSOMA</option>
+      <option>Médico Ocupacional</option>
+      <option>Otro</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>PIN de acceso<span class="req">*</span></label>
+    <input type="password" id="loginPin" inputmode="numeric" maxlength="6" placeholder="••••" />
+    <div class="hint">PIN demo: 2026</div>
+  </div>
+  <button class="btn btn-primary" onclick="doLogin()">Ingresar</button>
+</div>
+
+<div id="app" class="hidden">
+  <div class="topbar">
+    <div class="logo">PS</div>
+    <div class="titles">
+      <h1>Fotocheck PANASUR</h1>
+      <div class="sub">Hanaqpampa · <span id="topUser">—</span></div>
     </div>
-    <h1>PANASUR SSOMA</h1>
-    <p class="subtitle">Captura de Fotocheck</p>
-    <p class="project">Proyecto Hanaqpampa</p>
-    <div class="form-group">
-      <label>Usuario</label>
-      <input type="text" id="login-user" placeholder="alvaro.ruiz" autocomplete="username">
+    <div id="syncStatus" class="status"><span class="dot"></span><span id="syncText">Online</span></div>
+  </div>
+
+  <div class="steps">
+    <div class="step" data-step="1">Buscar</div>
+    <div class="step" data-step="2">Validar</div>
+    <div class="step" data-step="3">Foto</div>
+    <div class="step" data-step="4">Datos</div>
+    <div class="step" data-step="5">Firma</div>
+  </div>
+
+  <div class="counter-row">
+    <div class="counter green"><div class="num" id="cntVigentes">—</div><div class="lbl">Vigentes</div></div>
+    <div class="counter gold"><div class="num" id="cntPendientes">—</div><div class="lbl">Pendientes</div></div>
+  </div>
+
+  <div id="card1" class="card">
+    <h2><span class="num">1</span>Buscar trabajador</h2>
+    <div class="field">
+      <label>DNI<span class="req">*</span></label>
+      <input type="text" id="searchDni" inputmode="numeric" maxlength="8" placeholder="8 dígitos" oninput="searchByDni()" />
     </div>
-    <div class="form-group">
-      <label>PIN de acceso</label>
-      <input type="password" id="login-pin" placeholder="••••" inputmode="numeric" maxlength="6" autocomplete="current-password">
+    <div id="searchResults" class="search-results"></div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-outline" onclick="newWorker()">+ Nuevo trabajador</button>
+      <button class="btn btn-secondary" onclick="loadList()">Ver lista</button>
     </div>
-    <button id="btn-login" class="btn-primary">Ingresar</button>
-    <p id="login-error" class="error-msg"></p>
-    <p class="footer-version">v1.0.0 · Tours Panasur E.I.R.L.</p>
+  </div>
+
+  <div id="card2" class="card hidden">
+    <h2><span class="num">2</span>Prerrequisitos</h2>
+    <div id="workerHeader" style="margin-bottom:12px;padding:10px;background:var(--navy-pale);border-radius:8px;font-size:13px">
+      <div style="font-weight:700;color:var(--navy)" id="hName">—</div>
+      <div style="font-size:11px;color:var(--gray-500);margin-top:2px" id="hDni">DNI —</div>
+    </div>
+    <div class="checks" id="checksGrid"></div>
+    <button class="btn btn-primary" id="btnContinue1" onclick="goStep(3)">Continuar →</button>
+  </div>
+
+  <div id="card3" class="card hidden">
+    <h2><span class="num">3</span>Foto del trabajador</h2>
+    <div id="photoFrame" class="photo-frame empty">
+      <div style="text-align:center">
+        <div class="icon">📷</div>
+        <div>Toca "Iniciar cámara"</div>
+      </div>
+    </div>
+    <video id="video" class="hidden" autoplay playsinline muted></video>
+    <canvas id="canvas" class="hidden"></canvas>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnStartCam" onclick="startCamera()">📷 Iniciar cámara</button>
+      <button class="btn btn-success hidden" id="btnTakePhoto" onclick="takePhoto()">📸 Capturar</button>
+    </div>
+    <div class="btn-row hidden" id="photoActions">
+      <button class="btn btn-secondary" onclick="retakePhoto()">↺ Repetir</button>
+      <button class="btn btn-primary" onclick="goStep(4)">Continuar →</button>
+    </div>
+    <div class="hint" style="margin-top:8px;font-size:11px;color:var(--gray-500);text-align:center">
+      Rostro centrado · Fondo claro · Casco visible (operativos) · Sin lentes oscuros
+    </div>
+  </div>
+
+  <div id="card4" class="card hidden">
+    <h2><span class="num">4</span>Datos del trabajador</h2>
+    <div class="row-2">
+      <div class="field"><label>Apellidos<span class="req">*</span></label><input type="text" id="fApellidos" /></div>
+      <div class="field"><label>Nombres<span class="req">*</span></label><input type="text" id="fNombres" /></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label>DNI<span class="req">*</span></label><input type="text" id="fDni" inputmode="numeric" maxlength="8" /></div>
+      <div class="field"><label>Sexo</label><select id="fSexo"><option value="">—</option><option>M</option><option>F</option></select></div>
+    </div>
+    <div class="field"><label>Fecha de nacimiento</label><input type="date" id="fNac" /></div>
+    <div class="field"><label>Cargo<span class="req">*</span></label><select id="fCargo" onchange="autoTipoColor()"><option value="">— Seleccionar —</option></select></div>
+    <div class="row-2">
+      <div class="field"><label>Tipo de personal</label><input type="text" id="fTipo" readonly /></div>
+      <div class="field"><label>Color credencial</label><input type="text" id="fColor" readonly /></div>
+    </div>
+    <div class="field"><label>Empresa</label><input type="text" id="fEmpresa" value="TOURS PANASUR E.I.R.L." /></div>
+    <div class="row-2">
+      <div class="field"><label>Grupo sanguíneo<span class="req">*</span></label><select id="fGS"><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>S/D</option></select></div>
+      <div class="field"><label>Talla EPP</label><select id="fTalla"><option value="">—</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select></div>
+    </div>
+    <div class="field"><label>Alergias</label><input type="text" id="fAlergias" value="Niega" /></div>
+    <div class="field"><label>Teléfono<span class="req">*</span></label><input type="tel" id="fTel" inputmode="numeric" maxlength="9" placeholder="9 dígitos" /></div>
+    <div class="field"><label>Domicilio</label><input type="text" id="fDom" /></div>
+    <h2 style="margin-top:18px"><span class="num">📞</span>Contacto de emergencia</h2>
+    <div class="field"><label>Nombre completo<span class="req">*</span></label><input type="text" id="fEmerNom" /></div>
+    <div class="row-2">
+      <div class="field"><label>Parentesco<span class="req">*</span></label><select id="fEmerPar"><option value="">—</option><option>Padre</option><option>Madre</option><option>Esposo(a)</option><option>Hijo(a)</option><option>Hermano(a)</option><option>Otro</option></select></div>
+      <div class="field"><label>Teléfono<span class="req">*</span></label><input type="tel" id="fEmerTel" inputmode="numeric" maxlength="9" /></div>
+    </div>
+    <h2 style="margin-top:18px"><span class="num">🏥</span>Seguros</h2>
+    <div class="field"><label>SCTR Salud</label><input type="text" id="fSctrS" placeholder="Aseguradora + N° póliza" /></div>
+    <div class="field"><label>SCTR Pensión</label><input type="text" id="fSctrP" /></div>
+    <div class="field"><label>EsSalud / EPS</label><input type="text" id="fEss" /></div>
+    <button class="btn btn-primary" style="margin-top:16px" onclick="continueToSig()">Continuar →</button>
+  </div>
+
+  <div id="card5" class="card hidden">
+    <h2><span class="num">5</span>Firma del trabajador</h2>
+    <div class="field">
+      <label>Trazar firma con el dedo</label>
+      <canvas id="sigPad" class="sig-pad" width="400" height="140"></canvas>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn btn-secondary" onclick="clearSig()">↺ Borrar</button>
+        <button class="btn btn-secondary" onclick="confirmSig()">✓ Confirmar firma</button>
+      </div>
+    </div>
+    <h2 style="margin-top:16px">Vista previa del fotocheck</h2>
+    <div id="fcPreview" class="fc-preview">
+      <div class="fc-band-top">
+        <h3>TOURS PANASUR E.I.R.L.</h3>
+        <div class="ruc">RUC 20532012879</div>
+      </div>
+      <div class="fc-proj">
+        PROYECTO<br>
+        <strong style="font-size:9px">ACCESO PRINCIPAL CSF HANAQPAMPA</strong><br>
+        <span style="font-size:7px;font-style:italic">Cliente: ENGIE Energía Perú S.A.A.</span>
+      </div>
+      <div class="fc-photo-row">
+        <img id="prevFoto" class="fc-photo" alt="" />
+        <div class="fc-data">
+          <div><span class="lbl">APELLIDOS</span><br><span class="val" id="prevApe">—</span></div>
+          <div><span class="lbl">NOMBRES</span><br><span class="val" id="prevNom">—</span></div>
+          <div><span class="lbl">DNI</span><br><span class="val" id="prevDni">—</span></div>
+          <div><span class="lbl">CARGO</span><br><span class="val" id="prevCargo" style="font-size:7px">—</span></div>
+        </div>
+      </div>
+      <div id="prevTipoBand" class="fc-tipo-band tipo-VERDE"><span id="prevTipo">OBRERO/OPERATIVO</span></div>
+      <div class="fc-bottom">
+        <div class="fc-gs"><div class="lbl">GRUPO</div><div class="val" id="prevGS">O+</div></div>
+        <div class="fc-emer">
+          <div style="font-weight:700;color:var(--navy);font-size:7px">EMERGENCIA SSOMA</div>
+          <div>Ambulancia EUH-394</div>
+          <div class="tel">988 ___ ___</div>
+        </div>
+      </div>
+      <div class="fc-num-vig">
+        <div class="fc-num"><div class="lbl">N° CREDENCIAL</div><div class="val" id="prevCred">PNS-2026-XXX</div></div>
+        <div class="fc-vig"><div class="lbl">VIGENCIA</div><div class="val" id="prevVig">30/06/2026</div></div>
+      </div>
+      <div id="prevQr" class="fc-qr"></div>
+    </div>
+    <div class="gps-info" id="gpsInfo">📍 Capturando ubicación…</div>
+    <button class="btn btn-success" id="btnSubmit" style="margin-top:14px" onclick="submitFotocheck()">
+      <span id="submitText">✓ Guardar y registrar</span>
+    </button>
+    <button class="btn btn-outline" style="margin-top:8px" onclick="window.print()">🖨️ Imprimir vista previa</button>
+  </div>
+
+  <div id="cardList" class="card hidden">
+    <h2><span class="num">📋</span>Trabajadores registrados</h2>
+    <div id="listContainer" style="max-height:400px;overflow-y:auto"></div>
+    <button class="btn btn-secondary" style="margin-top:12px" onclick="showStep(1)">← Volver</button>
   </div>
 </div>
 
-<!-- ================ APP ================ -->
-<div id="app-screen" class="screen">
-
-  <header class="app-header">
-    <div class="header-content">
-      <button id="btn-menu" class="btn-icon">☰</button>
-      <div class="header-title">
-        <div class="title-main">PANASUR · Fotocheck</div>
-        <div class="title-sub" id="header-user">—</div>
-      </div>
-      <div id="online-status" class="status-pill online">●</div>
-    </div>
-  </header>
-
-  <!-- ================ TAB BAR ================ -->
-  <nav class="tab-bar">
-    <button class="tab-btn active" data-tab="lista">
-      <span class="tab-icon">📋</span>
-      <span class="tab-label">Lista</span>
-    </button>
-    <button class="tab-btn" data-tab="capturar">
-      <span class="tab-icon">📷</span>
-      <span class="tab-label">Capturar</span>
-    </button>
-    <button class="tab-btn" data-tab="dashboard">
-      <span class="tab-icon">📊</span>
-      <span class="tab-label">Resumen</span>
-    </button>
-  </nav>
-
-  <main class="app-main">
-
-    <!-- ============ TAB LISTA ============ -->
-    <section id="tab-lista" class="tab-content active">
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="🔍 Buscar por DNI, nombre o credencial...">
-      </div>
-      <div class="filter-pills">
-        <button class="pill active" data-filter="todos">Todos</button>
-        <button class="pill" data-filter="VIGENTE">Vigentes</button>
-        <button class="pill" data-filter="PENDIENTE EMISIÓN">Pendientes</button>
-        <button class="pill" data-filter="sin-foto">Sin foto</button>
-      </div>
-      <div id="lista-counter" class="lista-counter">— trabajadores</div>
-      <div id="lista-trabajadores" class="lista-trabajadores">
-        <div class="loading">Cargando...</div>
-      </div>
-    </section>
-
-    <!-- ============ TAB CAPTURAR ============ -->
-    <section id="tab-capturar" class="tab-content">
-      <div id="capturar-content"></div>
-    </section>
-
-    <!-- ============ TAB DASHBOARD ============ -->
-    <section id="tab-dashboard" class="tab-content">
-      <div class="dashboard-header">
-        <h2>Resumen del Proyecto</h2>
-        <button id="btn-refresh" class="btn-link">⟳ Actualizar</button>
-      </div>
-      <div id="kpi-grid" class="kpi-grid">
-        <div class="kpi-card kpi-navy">
-          <div class="kpi-label">Total registrados</div>
-          <div class="kpi-value" id="kpi-total">—</div>
-        </div>
-        <div class="kpi-card kpi-green">
-          <div class="kpi-label">Vigentes</div>
-          <div class="kpi-value" id="kpi-vigentes">—</div>
-        </div>
-        <div class="kpi-card kpi-gold">
-          <div class="kpi-label">Pendientes</div>
-          <div class="kpi-value" id="kpi-pendientes">—</div>
-        </div>
-        <div class="kpi-card kpi-red">
-          <div class="kpi-label">Sin foto</div>
-          <div class="kpi-value" id="kpi-sin-foto">—</div>
-        </div>
-      </div>
-      <div class="dashboard-section">
-        <h3>Distribución por tipo</h3>
-        <div id="dist-tipo" class="dist-grid"></div>
-      </div>
-      <div class="dashboard-section">
-        <h3>EMO próximos a vencer</h3>
-        <div id="emo-vencer" class="lista-trabajadores"></div>
-      </div>
-    </section>
-
-  </main>
-</div>
-
-<!-- ================ MODAL FOTOCHECK ================ -->
-<div id="modal-fotocheck" class="modal hidden">
-  <div class="modal-backdrop" onclick="cerrarModalFotocheck()"></div>
-  <div class="modal-content fotocheck-preview">
-    <button class="modal-close" onclick="cerrarModalFotocheck()">✕</button>
-    <h2>Vista Previa del Fotocheck</h2>
-    <div id="fc-preview-container" class="fc-preview-container"></div>
-    <div class="modal-actions">
-      <button class="btn-secondary" onclick="cerrarModalFotocheck()">Cerrar</button>
-      <button class="btn-primary" onclick="descargarFotocheck()">⬇ Descargar PNG</button>
-    </div>
-  </div>
-</div>
-
-<!-- ================ MODAL CÁMARA ================ -->
-<div id="modal-camara" class="modal hidden">
-  <div class="camara-fullscreen">
-    <video id="camara-video" autoplay playsinline></video>
-    <canvas id="camara-canvas" class="hidden"></canvas>
-    <div class="camara-overlay">
-      <div class="camara-frame"></div>
-      <div class="camara-instructions">
-        Centre el rostro en el marco<br>
-        Fondo claro · EPP visible
-      </div>
-    </div>
-    <div class="camara-controls">
-      <button class="btn-icon-large" onclick="cerrarCamara()">✕</button>
-      <button class="btn-capture" id="btn-capture" onclick="capturarFoto()"></button>
-      <button class="btn-icon-large" id="btn-flip-camera" onclick="flipCamera()">⇆</button>
-    </div>
-  </div>
-</div>
-
-<!-- ================ TOAST ================ -->
 <div id="toast" class="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-<script src="config.js"></script>
-<script src="app.js"></script>
+<script>
+const SUPABASE_URL = 'https://uinoropxppiuqgzktqjr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpbm9yb3B4cHBpdXFnemt0cWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NjU0MTUsImV4cCI6MjA4NTE0MTQxNX0.V9sTNqTC_aldhwgE6RF66BEXfRvTF6jDLqm1WvbInTo';
+const STORAGE_BUCKET = 'panasur-fotochecks';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const state = {
+  operador: null, currentDni: null, currentRecord: null,
+  photoBlob: null, signatureBlob: null,
+  gps: { lat: null, lng: null }, stream: null,
+  prerequisitos: { induccion: false, emo: false, sctr: false, risst: false },
+  offline: !navigator.onLine, numCred: null
+};
+
+const CARGOS = [
+  'GERENTE GENERAL','JEFE DE CONSTRUCCIÓN','JEFE SSOMA','RESIDENTE DE OBRA',
+  'INGENIERO SSOMA','ASISTENTE SSOMA','INGENIERO DE OFICINA TÉCNICA',
+  'SUPERVISOR DE CALIDAD','TOPÓGRAFO','AUXILIAR DE TOPOGRAFÍA',
+  'ADMINISTRADOR','ADMINISTRADOR DE OBRA','ALMACENERO','LOGÍSTICA',
+  'CAPATAZ','OPERADOR DE EXCAVADORA','OPERADOR DE CARGADOR FRONTAL',
+  'OPERADOR DE RODILLO','OPERADOR DE RODILLO Y CARGADOR FRONTAL',
+  'OPERADOR DE MOTONIVELADORA','OPERADOR DE VOLQUETE','OPERADOR DE TRACTOR ORUGA',
+  'OPERADOR DE CISTERNA','OPERADOR DE CISTERNA DE COMBUSTIBLE',
+  'CONDUCTOR DE CAMIONETA','CONDUCTOR DE BUS','CONDUCTOR DE AMBULANCIA',
+  'OFICIAL','AYUDANTE DE OBRA','PEÓN','VIGÍA / CONTROLADOR',
+  'AGENTE DE SEGURIDAD','MÉDICO OCUPACIONAL','ENFERMERO(A)',
+  'COCINERO(A)','AYUDANTE DE COCINA'
+];
+
+function clasificarCargo(c) {
+  if (!c) return { tipo: '', color: '', cssClass: '' };
+  const u = c.toUpperCase();
+  if (/GERENTE|JEFE|RESIDENTE|INGENIERO SSOMA/.test(u)) return { tipo: 'STAFF/GERENCIA', color: 'AZUL NAVY', cssClass: 'tipo-NAVY' };
+  if (/INGENIERO|TOP[ÓO]GRAFO|ALMACENERO|ADMINISTRADOR|ASISTENTE|OFICINA|LOG[ÍI]STICA/.test(u)) return { tipo: 'STAFF TÉCNICO', color: 'AZUL CLARO', cssClass: 'tipo-LIGHT' };
+  if (/M[ÉE]DICO|ENFERMER|BRIGADIST/.test(u)) return { tipo: 'MÉDICO/SALUD', color: 'MORADO', cssClass: 'tipo-MORADO' };
+  return { tipo: 'OBRERO/OPERATIVO', color: 'VERDE', cssClass: 'tipo-VERDE' };
+}
+
+function doLogin() {
+  const op = document.getElementById('loginOperador').value;
+  const pin = document.getElementById('loginPin').value;
+  if (!op) return toast('Selecciona un operador', 'error');
+  if (pin !== '2026') return toast('PIN incorrecto', 'error');
+  state.operador = op;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('topUser').textContent = op.split('—')[0].trim();
+  initApp();
+}
+
+async function initApp() {
+  const sel = document.getElementById('fCargo');
+  CARGOS.forEach(c => { const o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        state.gps.lat = pos.coords.latitude;
+        state.gps.lng = pos.coords.longitude;
+        document.getElementById('gpsInfo').textContent = `📍 ${state.gps.lat.toFixed(4)}, ${state.gps.lng.toFixed(4)}`;
+      },
+      () => { document.getElementById('gpsInfo').textContent = '📍 GPS no disponible'; },
+      { enableHighAccuracy: true, timeout: 5000 }
+    );
+  }
+  await loadCounters();
+  window.addEventListener('online', () => { state.offline = false; updateSyncStatus(); });
+  window.addEventListener('offline', () => { state.offline = true; updateSyncStatus(); });
+  updateSyncStatus();
+  initSigPad();
+  showStep(1);
+}
+
+function updateSyncStatus() {
+  const el = document.getElementById('syncStatus');
+  const txt = document.getElementById('syncText');
+  if (state.offline) { el.classList.add('offline'); txt.textContent = 'Offline'; }
+  else { el.classList.remove('offline'); txt.textContent = 'Online'; }
+}
+
+async function loadCounters() {
+  try {
+    const { count: cVig } = await sb.from('panasur_fotochecks').select('*', { count: 'exact', head: true }).eq('estado', 'VIGENTE');
+    const { count: cPen } = await sb.from('panasur_fotochecks').select('*', { count: 'exact', head: true }).eq('estado', 'PENDIENTE EMISIÓN');
+    document.getElementById('cntVigentes').textContent = cVig ?? 0;
+    document.getElementById('cntPendientes').textContent = cPen ?? 0;
+  } catch (e) { console.error(e); }
+}
+
+function showStep(n) {
+  ['card1','card2','card3','card4','card5','cardList'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  if (n === 'list') { document.getElementById('cardList').classList.remove('hidden'); return; }
+  document.getElementById('card' + n).classList.remove('hidden');
+  document.querySelectorAll('.step').forEach((el, i) => {
+    el.classList.remove('active','done');
+    if (i + 1 < n) el.classList.add('done');
+    else if (i + 1 === n) el.classList.add('active');
+  });
+}
+
+function goStep(n) {
+  if (n === 5) renderPreview();
+  showStep(n);
+  window.scrollTo(0, 0);
+}
+
+function continueToSig() {
+  if (validateForm()) goStep(5);
+}
+
+let searchTimer;
+function searchByDni() {
+  clearTimeout(searchTimer);
+  const dni = document.getElementById('searchDni').value.trim();
+  if (dni.length < 3) { document.getElementById('searchResults').classList.remove('show'); return; }
+  searchTimer = setTimeout(async () => {
+    try {
+      const { data } = await sb.from('panasur_fotochecks').select('*').ilike('dni', `%${dni}%`).limit(10);
+      renderSearchResults(data || []);
+    } catch (e) { renderSearchResults([]); }
+  }, 300);
+}
+
+function renderSearchResults(items) {
+  const cont = document.getElementById('searchResults');
+  if (!items.length) {
+    cont.innerHTML = '<div class="search-item" style="text-align:center;color:var(--gray-500)">Sin resultados — toca "Nuevo trabajador"</div>';
+    cont.classList.add('show');
+    return;
+  }
+  cont.innerHTML = items.map(it => {
+    const badge = it.estado === 'VIGENTE' ? 'badge-green' : it.estado === 'PERDIDO' ? 'badge-red' : 'badge-yellow';
+    const recStr = encodeURIComponent(JSON.stringify(it));
+    return `<div class="search-item" onclick='selectWorkerById("${recStr}")'>
+      <div class="name">${it.apellidos || ''}, ${it.nombres || ''} <span class="badge ${badge}">${it.estado || ''}</span></div>
+      <div class="meta">DNI ${it.dni} · ${it.cargo || 'Sin cargo'} · ${it.numero_credencial || '—'}</div>
+    </div>`;
+  }).join('');
+  cont.classList.add('show');
+}
+
+function selectWorkerById(encoded) {
+  const rec = JSON.parse(decodeURIComponent(encoded));
+  selectWorker(rec);
+}
+
+function selectWorker(rec) {
+  state.currentRecord = rec;
+  state.currentDni = rec.dni;
+  fillForm(rec);
+  goStep(2);
+  validatePrerequisitos();
+}
+
+function newWorker() {
+  state.currentRecord = null;
+  const dni = document.getElementById('searchDni').value.trim();
+  state.currentDni = dni;
+  document.querySelectorAll('#card4 input, #card4 select').forEach(i => { if (i.id !== 'fEmpresa') i.value = ''; });
+  document.getElementById('fDni').value = dni;
+  document.getElementById('fGS').value = 'O+';
+  document.getElementById('fAlergias').value = 'Niega';
+  state.prerequisitos = { induccion: false, emo: false, sctr: false, risst: false };
+  document.getElementById('hName').textContent = 'NUEVO REGISTRO';
+  document.getElementById('hDni').textContent = `DNI ${dni || '—'}`;
+  goStep(2);
+  validatePrerequisitos();
+}
+
+function fillForm(rec) {
+  const f = id => document.getElementById(id);
+  f('fApellidos').value = rec.apellidos || '';
+  f('fNombres').value = rec.nombres || '';
+  f('fDni').value = rec.dni || '';
+  f('fSexo').value = rec.sexo || '';
+  f('fNac').value = rec.fecha_nacimiento || '';
+  f('fCargo').value = rec.cargo || '';
+  f('fEmpresa').value = rec.empresa || 'TOURS PANASUR E.I.R.L.';
+  f('fGS').value = rec.grupo_sanguineo || 'O+';
+  f('fAlergias').value = rec.alergias || 'Niega';
+  f('fTalla').value = rec.talla_epp || '';
+  f('fTel').value = rec.telefono || '';
+  f('fDom').value = rec.domicilio || '';
+  f('fEmerNom').value = rec.contacto_emergencia || '';
+  f('fEmerPar').value = rec.parentesco || '';
+  f('fEmerTel').value = rec.telefono_emergencia || '';
+  f('fSctrS').value = rec.sctr_salud || '';
+  f('fSctrP').value = rec.sctr_pension || '';
+  f('fEss').value = rec.essalud_eps || '';
+  autoTipoColor();
+  document.getElementById('hName').textContent = `${rec.apellidos || ''}, ${rec.nombres || ''}`;
+  document.getElementById('hDni').textContent = `DNI ${rec.dni} · ${rec.cargo || ''}`;
+}
+
+function autoTipoColor() {
+  const c = document.getElementById('fCargo').value;
+  const cl = clasificarCargo(c);
+  document.getElementById('fTipo').value = cl.tipo;
+  document.getElementById('fColor').value = cl.color;
+}
+
+function validateForm() {
+  const required = [
+    {id:'fApellidos',name:'Apellidos'},{id:'fNombres',name:'Nombres'},{id:'fDni',name:'DNI'},
+    {id:'fCargo',name:'Cargo'},{id:'fGS',name:'Grupo sanguíneo'},{id:'fTel',name:'Teléfono'},
+    {id:'fEmerNom',name:'Contacto emergencia'},{id:'fEmerPar',name:'Parentesco'},{id:'fEmerTel',name:'Teléfono emergencia'}
+  ];
+  for (const it of required) {
+    const v = document.getElementById(it.id).value.trim();
+    if (!v) { toast('Falta: ' + it.name, 'error'); document.getElementById(it.id).focus(); return false; }
+  }
+  if (document.getElementById('fDni').value.length !== 8) { toast('DNI debe tener 8 dígitos', 'error'); return false; }
+  if (document.getElementById('fTel').value.length !== 9) { toast('Teléfono debe tener 9 dígitos', 'error'); return false; }
+  return true;
+}
+
+function validatePrerequisitos() {
+  const rec = state.currentRecord;
+  const p = state.prerequisitos;
+  if (rec) {
+    p.induccion = !!rec.fecha_induccion;
+    p.emo = !!rec.vigencia_emo && new Date(rec.vigencia_emo) > new Date();
+    p.sctr = !!rec.sctr_salud;
+    p.risst = !!rec.fecha_risst;
+  } else {
+    p.induccion = p.emo = p.sctr = p.risst = false;
+  }
+  renderChecks();
+}
+
+function renderChecks() {
+  const p = state.prerequisitos;
+  const items = [
+    { k: 'induccion', label: 'Inducción SSOMA' },
+    { k: 'emo', label: 'EMO vigente' },
+    { k: 'sctr', label: 'SCTR vigente' },
+    { k: 'risst', label: 'RISST firmado' }
+  ];
+  document.getElementById('checksGrid').innerHTML = items.map(it => {
+    const cls = p[it.k] ? 'ok' : 'fail';
+    const ic = p[it.k] ? '✓' : '✗';
+    return `<div class="check ${cls}"><span style="font-weight:700">${ic}</span>${it.label}</div>`;
+  }).join('');
+}
+
+async function startCamera() {
+  try {
+    state.stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1440 } }
+    });
+    const v = document.getElementById('video');
+    v.srcObject = state.stream;
+    document.getElementById('photoFrame').innerHTML = '';
+    v.classList.remove('hidden');
+    document.getElementById('photoFrame').appendChild(v);
+    const ov = document.createElement('div');
+    ov.className = 'overlay';
+    ov.innerHTML = '<div class="guide"></div><div class="guide-label">Centra el rostro · Casco visible · Fondo claro</div>';
+    document.getElementById('photoFrame').appendChild(ov);
+    document.getElementById('photoFrame').classList.remove('empty');
+    document.getElementById('btnStartCam').classList.add('hidden');
+    document.getElementById('btnTakePhoto').classList.remove('hidden');
+  } catch (e) {
+    toast('Cámara no disponible: ' + e.message, 'error');
+  }
+}
+
+function takePhoto() {
+  const v = document.getElementById('video');
+  const c = document.getElementById('canvas');
+  const w = v.videoWidth, h = v.videoHeight;
+  const target = { w: 600, h: 800 };
+  c.width = target.w; c.height = target.h;
+  const ratio = w / h;
+  let sx, sy, sw, sh;
+  if (ratio > 0.75) { sh = h; sw = h * 0.75; sx = (w - sw) / 2; sy = 0; }
+  else { sw = w; sh = w / 0.75; sx = 0; sy = (h - sh) / 2; }
+  c.getContext('2d').drawImage(v, sx, sy, sw, sh, 0, 0, target.w, target.h);
+  c.toBlob(blob => {
+    state.photoBlob = blob;
+    state.stream.getTracks().forEach(t => t.stop());
+    document.getElementById('photoFrame').innerHTML = '';
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(blob);
+    document.getElementById('photoFrame').appendChild(img);
+    document.getElementById('btnTakePhoto').classList.add('hidden');
+    document.getElementById('photoActions').classList.remove('hidden');
+  }, 'image/jpeg', 0.85);
+}
+
+function retakePhoto() {
+  state.photoBlob = null;
+  document.getElementById('photoFrame').innerHTML = '<div style="text-align:center"><div class="icon">📷</div><div>Toca "Iniciar cámara"</div></div>';
+  document.getElementById('photoFrame').classList.add('empty');
+  document.getElementById('btnStartCam').classList.remove('hidden');
+  document.getElementById('photoActions').classList.add('hidden');
+}
+
+function initSigPad() {
+  const cv = document.getElementById('sigPad');
+  setTimeout(() => {
+    const dpr = window.devicePixelRatio || 1;
+    const w = cv.offsetWidth, h = cv.offsetHeight;
+    cv.width = w * dpr;
+    cv.height = h * dpr;
+    const ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000';
+
+    let drawing = false;
+    let lastX, lastY;
+    let strokes = 0;
+
+    const getPos = e => {
+      const r = cv.getBoundingClientRect();
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+      return { x, y };
+    };
+    const start = e => { e.preventDefault(); drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; };
+    const move = e => {
+      if (!drawing) return; e.preventDefault();
+      const p = getPos(e);
+      ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke();
+      lastX = p.x; lastY = p.y; strokes++;
+    };
+    const end = () => { drawing = false; if (strokes > 5) cv.classList.add('signed'); };
+    cv.addEventListener('mousedown', start);
+    cv.addEventListener('mousemove', move);
+    cv.addEventListener('mouseup', end);
+    cv.addEventListener('mouseleave', end);
+    cv.addEventListener('touchstart', start, { passive: false });
+    cv.addEventListener('touchmove', move, { passive: false });
+    cv.addEventListener('touchend', end);
+  }, 100);
+}
+
+function clearSig() {
+  const cv = document.getElementById('sigPad');
+  cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+  cv.classList.remove('signed');
+  state.signatureBlob = null;
+}
+
+function confirmSig() {
+  const cv = document.getElementById('sigPad');
+  if (!cv.classList.contains('signed')) { toast('Por favor firma primero', 'error'); return; }
+  cv.toBlob(b => { state.signatureBlob = b; toast('Firma confirmada', 'success'); }, 'image/png');
+}
+
+async function getNextCredencial() {
+  try {
+    const { data } = await sb.from('panasur_fotochecks').select('numero_credencial').like('numero_credencial', 'PNS-2026-%').order('numero_credencial', { ascending: false }).limit(1);
+    if (data && data.length > 0) {
+      const last = data[0].numero_credencial;
+      const num = parseInt(last.replace('PNS-2026-', '')) + 1;
+      return `PNS-2026-${String(num).padStart(3, '0')}`;
+    }
+  } catch (e) {}
+  return `PNS-2026-${String(Math.floor(Math.random() * 900 + 100)).padStart(3, '0')}`;
+}
+
+async function renderPreview() {
+  const v = id => document.getElementById(id).value;
+  document.getElementById('prevApe').textContent = v('fApellidos') || '—';
+  document.getElementById('prevNom').textContent = v('fNombres') || '—';
+  document.getElementById('prevDni').textContent = v('fDni') || '—';
+  document.getElementById('prevCargo').textContent = v('fCargo') || '—';
+  document.getElementById('prevTipo').textContent = v('fTipo') || '—';
+  document.getElementById('prevGS').textContent = v('fGS') || '—';
+  const cl = clasificarCargo(v('fCargo'));
+  document.getElementById('prevTipoBand').className = 'fc-tipo-band ' + (cl.cssClass || 'tipo-VERDE');
+  if (state.photoBlob) document.getElementById('prevFoto').src = URL.createObjectURL(state.photoBlob);
+  const ncred = state.currentRecord?.numero_credencial || await getNextCredencial();
+  document.getElementById('prevCred').textContent = ncred;
+  state.numCred = ncred;
+  document.getElementById('prevVig').textContent = '30/06/2026';
+  const qrDiv = document.getElementById('prevQr');
+  qrDiv.innerHTML = '';
+  new QRCode(qrDiv, { text: ncred, width: 32, height: 32, colorDark: '#1F3864', correctLevel: QRCode.CorrectLevel.L });
+}
+
+async function submitFotocheck() {
+  if (!state.photoBlob) { toast('Falta capturar la foto', 'error'); goStep(3); return; }
+  if (!state.signatureBlob) { toast('Confirma la firma primero', 'error'); return; }
+  if (!validateForm()) return;
+  document.getElementById('btnSubmit').disabled = true;
+  document.getElementById('submitText').innerHTML = '<span class="spinner"></span> Guardando…';
+  try {
+    const v = id => document.getElementById(id).value.trim();
+    const numCred = state.numCred;
+    const dni = v('fDni');
+    const ts = Date.now();
+
+    const photoPath = `fotos/${dni}_${ts}.jpg`;
+    const { error: errPhoto } = await sb.storage.from(STORAGE_BUCKET).upload(photoPath, state.photoBlob, { contentType: 'image/jpeg', upsert: true });
+    if (errPhoto) throw errPhoto;
+    const photoUrl = sb.storage.from(STORAGE_BUCKET).getPublicUrl(photoPath).data.publicUrl;
+
+    const sigPath = `firmas/${dni}_${ts}.png`;
+    const { error: errSig } = await sb.storage.from(STORAGE_BUCKET).upload(sigPath, state.signatureBlob, { contentType: 'image/png', upsert: true });
+    if (errSig) throw errSig;
+    const sigUrl = sb.storage.from(STORAGE_BUCKET).getPublicUrl(sigPath).data.publicUrl;
+
+    const cl = clasificarCargo(v('fCargo'));
+    const payload = {
+      numero_credencial: numCred,
+      dni: dni,
+      apellidos: v('fApellidos').toUpperCase(),
+      nombres: v('fNombres').toUpperCase(),
+      fecha_nacimiento: v('fNac') || null,
+      sexo: v('fSexo') || null,
+      cargo: v('fCargo'),
+      empresa: v('fEmpresa'),
+      tipo_personal: cl.tipo,
+      color_credencial: cl.color,
+      grupo_sanguineo: v('fGS'),
+      alergias: v('fAlergias') || 'Niega',
+      talla_epp: v('fTalla') || null,
+      telefono: v('fTel'),
+      contacto_emergencia: v('fEmerNom'),
+      telefono_emergencia: v('fEmerTel'),
+      parentesco: v('fEmerPar'),
+      domicilio: v('fDom') || null,
+      sctr_salud: v('fSctrS') || null,
+      sctr_pension: v('fSctrP') || null,
+      essalud_eps: v('fEss') || null,
+      foto_url: photoUrl,
+      firma_url: sigUrl,
+      estado: 'EN IMPRESIÓN',
+      fecha_entrega: new Date().toISOString().slice(0, 10),
+      vigencia_credencial: '2026-06-30',
+      capturado_por: state.operador,
+      capturado_lat: state.gps.lat,
+      capturado_lng: state.gps.lng,
+      capturado_at: new Date().toISOString(),
+      actualizado_at: new Date().toISOString()
+    };
+
+    const { data: upserted, error: errUpsert } = await sb.from('panasur_fotochecks').upsert(payload, { onConflict: 'dni' }).select().single();
+    if (errUpsert) throw errUpsert;
+
+    await sb.from('panasur_fotocheck_emisiones').insert({
+      fotocheck_id: upserted.id,
+      numero_credencial: numCred,
+      motivo: state.currentRecord ? 'RENOVACIÓN POR VENCIMIENTO' : 'ALTA INICIAL',
+      vigencia_hasta: '2026-06-30',
+      impresion_tipo: 'PVC',
+      lanyard_entregado: true,
+      porta_fotocheck_entregado: true,
+      firma_trabajador: true,
+      entregado_por: state.operador
+    });
+
+    await sb.from('panasur_fotocheck_audit').insert({
+      fotocheck_id: upserted.id,
+      accion: 'CAPTURA_PWA',
+      usuario: state.operador,
+      lat: state.gps.lat,
+      lng: state.gps.lng,
+      detalles: { numero_credencial: numCred, dni: dni }
+    });
+
+    toast('✓ Fotocheck registrado: ' + numCred, 'success');
+    setTimeout(() => { resetForm(); loadCounters(); showStep(1); }, 2000);
+  } catch (e) {
+    console.error(e);
+    toast('Error: ' + (e.message || e), 'error');
+    document.getElementById('btnSubmit').disabled = false;
+    document.getElementById('submitText').textContent = '✓ Guardar y registrar';
+  }
+}
+
+function resetForm() {
+  state.photoBlob = null;
+  state.signatureBlob = null;
+  state.currentRecord = null;
+  state.currentDni = null;
+  state.numCred = null;
+  document.getElementById('searchDni').value = '';
+  document.getElementById('searchResults').classList.remove('show');
+  document.querySelectorAll('#card4 input, #card4 select').forEach(i => { if (i.id !== 'fEmpresa') i.value = ''; });
+  document.getElementById('fGS').value = 'O+';
+  document.getElementById('fAlergias').value = 'Niega';
+  retakePhoto();
+  clearSig();
+  document.getElementById('btnSubmit').disabled = false;
+  document.getElementById('submitText').textContent = '✓ Guardar y registrar';
+}
+
+async function loadList() {
+  showStep('list');
+  const cont = document.getElementById('listContainer');
+  cont.innerHTML = '<div style="text-align:center;color:var(--gray-500);padding:24px">Cargando…</div>';
+  try {
+    const { data } = await sb.from('panasur_fotochecks').select('*').order('numero_credencial').limit(100);
+    if (!data || !data.length) { cont.innerHTML = '<div style="text-align:center;color:var(--gray-500);padding:24px">Sin registros</div>'; return; }
+    cont.innerHTML = data.map(it => {
+      const badge = it.estado === 'VIGENTE' ? 'badge-green' : it.estado === 'PERDIDO' ? 'badge-red' : 'badge-yellow';
+      const recStr = encodeURIComponent(JSON.stringify(it));
+      return `<div class="search-item" onclick='selectWorkerById("${recStr}")'>
+        <div class="name">${it.numero_credencial} · ${it.apellidos || ''}, ${it.nombres || ''} <span class="badge ${badge}">${it.estado || ''}</span></div>
+        <div class="meta">DNI ${it.dni} · ${it.cargo || 'Sin cargo'}</div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    cont.innerHTML = '<div style="text-align:center;color:var(--red);padding:24px">Error: ' + e.message + '</div>';
+  }
+}
+
+function toast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
 </body>
 </html>
