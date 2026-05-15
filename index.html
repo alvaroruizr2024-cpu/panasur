@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0A1628" />
+<title>PANASUR · Plataforma SSOMA · CSF Hanaqpampa</title>
+<meta name="description" content="Plataforma SSOMA Tours Panasur E.I.R.L. — Proyecto Construcción Acceso Central Solar Fotovoltaica Hanaqpampa." />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230A1628'/%3E%3Cpath d='M20 75 L50 20 L80 75 Z' fill='%23F59E0B'/%3E%3Ccircle cx='50' cy='62' r='9' fill='%2310B981'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Inter',sans-serif;background:#050B14;color:#E5EAF1;min-height:100vh;-webkit-font-smoothing:antialiased}
+body{background:
+  radial-gradient(900px 700px at 80% -10%,rgba(245,158,11,.18) 0%,transparent 60%),
+  radial-gradient(800px 600px at 0% 110%,rgba(0,59,111,.4) 0%,transparent 55%),
+  linear-gradient(180deg,#04080F 0%,#0A1628 50%,#050B14 100%);
+  background-attachment:fixed}
+a{text-decoration:none;color:inherit}
+.shell{max-width:1180px;margin:0 auto;padding:60px 28px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:50px;flex-wrap:wrap;gap:16px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-mark{width:48px;height:48px;border-radius:13px;background:linear-gradient(135deg,#0A1628 0%,#15356B 100%);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.brand-mark::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(245,158,11,.55) 0%,transparent 60%)}
+.brand-mark svg{position:relative;z-index:2}
+.brand-text .ttl{font-size:15px;font-weight:800;color:#fff;letter-spacing:.5px;line-height:1.1}
+.brand-text .sub{font-size:11px;color:#94A3B8;margin-top:3px;letter-spacing:.4px;text-transform:uppercase;font-weight:500}
+.tag-doc{font-size:10.5px;font-weight:700;letter-spacing:.5px;color:#FBBF24;background:rgba(245,158,11,.1);padding:6px 12px;border-radius:8px;border:1px solid rgba(245,158,11,.25)}
+
+.hero-block{margin-bottom:60px}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:30px;background:rgba(16,185,129,.13);border:1px solid rgba(16,185,129,.35);color:#A7F3D0;font-size:11.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:22px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:#34D399;box-shadow:0 0 12px #34D399;animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+h1{font-family:'Playfair Display',serif;font-size:clamp(36px,6vw,62px);font-weight:800;line-height:1.05;letter-spacing:-1.4px;color:#fff;margin-bottom:18px;max-width:900px}
+h1 .accent{background:linear-gradient(120deg,#FBBF24,#F59E0B 60%,#D97706);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic}
+.lede{font-size:17px;line-height:1.6;color:#CBD5E1;max-width:760px;font-weight:400}
+
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:22px;margin-top:40px}
+.app-card{position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(180deg,rgba(15,31,54,.7) 0%,rgba(10,22,40,.95) 100%);border:1px solid rgba(255,255,255,.08);transition:all .3s cubic-bezier(.2,.7,.3,1);display:flex;flex-direction:column;min-height:380px;backdrop-filter:blur(14px)}
+.app-card:hover{transform:translateY(-6px);border-color:rgba(245,158,11,.4);box-shadow:0 26px 60px rgba(0,0,0,.5),0 0 0 1px rgba(245,158,11,.2)}
+.app-card .cover{position:relative;height:170px;overflow:hidden;background:linear-gradient(135deg,#15356B,#0A1628)}
+.app-card .cover img{width:100%;height:100%;object-fit:cover;opacity:.7;transition:all .6s}
+.app-card:hover .cover img{opacity:.85;transform:scale(1.06)}
+.app-card .cover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(10,22,40,.9) 100%)}
+.app-card .badge{position:absolute;top:14px;left:14px;z-index:2;font-size:10px;font-weight:700;color:#0A1628;background:linear-gradient(135deg,#F59E0B,#FBBF24);padding:5px 11px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
+.app-card .body{padding:24px 26px 26px;flex:1;display:flex;flex-direction:column}
+.app-card h3{font-family:'Playfair Display',serif;font-size:23px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.2;letter-spacing:-.3px}
+.app-card p{font-size:13.5px;color:#94A3B8;line-height:1.55;flex:1;margin-bottom:20px}
+.app-card .cta{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:#FBBF24;padding:11px 16px;border-radius:10px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);align-self:flex-start;transition:all .2s}
+.app-card:hover .cta{background:rgba(245,158,11,.2);border-color:rgba(245,158,11,.5)}
+.app-card .cta svg{transition:transform .2s}
+.app-card:hover .cta svg{transform:translateX(3px)}
+
+.featured{grid-column:1/-1;display:grid;grid-template-columns:1fr 1.2fr;min-height:340px;background:linear-gradient(135deg,rgba(0,59,111,.4) 0%,rgba(15,31,54,.85) 60%,rgba(10,22,40,.95) 100%)}
+@media (max-width:780px){.featured{grid-template-columns:1fr}}
+.featured .cover{height:auto}
+.featured .body{padding:38px 40px}
+.featured .badge{background:linear-gradient(135deg,#10B981,#34D399);color:#fff}
+.featured h3{font-size:30px}
+.featured p{font-size:14.5px;line-height:1.65;color:#CBD5E1}
+.featured .cta{font-size:14.5px;padding:14px 22px;background:linear-gradient(135deg,#F59E0B,#D97706);color:#0A1628;border:none;box-shadow:0 8px 26px rgba(245,158,11,.4)}
+.featured:hover .cta{box-shadow:0 14px 36px rgba(245,158,11,.55)}
+.feature-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.feature-list span{font-size:11px;color:#CBD5E1;padding:5px 10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;font-weight:600}
+
+footer{margin-top:80px;padding-top:30px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;color:#64748B;font-size:11.5px;letter-spacing:.3px}
+footer .nm{color:#94A3B8;font-weight:600}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 18 L12 4 L21 18 Z" fill="#F59E0B"/>
+          <circle cx="12" cy="14.5" r="2.4" fill="#10B981"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="ttl">TOURS PANASUR E.I.R.L.</div>
+        <div class="sub">Plataforma SSOMA · CSF Hanaqpampa</div>
+      </div>
+    </div>
+    <span class="tag-doc">RUC 20259263230 · Moquegua · Perú</span>
+  </header>
+
+  <section class="hero-block">
+    <div class="eyebrow"><span class="dot"></span>Plataforma operativa · 3 aplicaciones SSOMA en producción</div>
+    <h1>Operamos <span class="accent">con evidencia</span> en alta montaña.</h1>
+    <p class="lede">Aplicaciones digitales para asegurar la trazabilidad SSOMA del proyecto <strong style="color:#fff">Construcción del acceso a la Central Solar Fotovoltaica Hanaqpampa</strong>. Inducciones ambientales, control de combustible y fotocheck de personal — auditables, integradas y operadas en obra.</p>
+  </section>
+
+  <div class="apps">
+
+    <a class="app-card featured" href="/induccion/">
+      <div class="cover">
+        <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1600&q=85" alt="Central solar fotovoltaica">
+        <div class="badge">⭐ Nuevo</div>
+      </div>
+      <div class="body">
+        <h3>Portal de Inducción Ambiental</h3>
+        <p>Plataforma interactiva y altamente fotorealista para la inducción ambiental obligatoria del personal en obra. Material guiado en 8 módulos con videos institucionales, examen calificado de 10 preguntas y certificación nominal en PDF. Trazabilidad 100% auditable conforme a la DIA aprobada por SENACE.</p>
+        <div class="feature-list">
+          <span>📋 8 módulos · DIA Cuadros 7.62 / 7.63 / 7.90</span>
+          <span>🎬 Videos institucionales</span>
+          <span>📝 Examen 10 preguntas</span>
+          <span>🏅 Certificado PDF nominal</span>
+          <span>📊 Dashboard SSOMA</span>
+        </div>
+        <span class="cta">Iniciar inducción ambiental
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <a class="app-card" href="/combustibles/">
+      <div class="cover">
+        <img src="https://images.unsplash.com/photo-1545459720-aac8509eb02c?auto=format&fit=crop&w=1200&q=85" alt="Control de combustible">
+        <div class="badge" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">Operativo</div>
+      </div>
+      <div class="body">
+        <h3>Control de Combustible</h3>
+        <p>Sistema digital para el registro de abastecimiento de combustible a maquinaria y vehículos del proyecto. Trazabilidad por unidad, operador y fecha — con sincronización en línea.</p>
+        <span class="cta">Abrir control de combustible
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <a class="app-card" href="/fotocheck/">
+      <div class="cover">
+        <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=85" alt="Fotocheck personal">
+        <div class="badge" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">Operativo</div>
+      </div>
+      <div class="body">
+        <h3>Fotocheck PANASUR</h3>
+        <p>Generador de fotochecks digitales para el personal en obra. Captura de foto, datos del trabajador, firma y validación SSOMA con código QR para verificación inmediata.</p>
+        <span class="cta">Abrir fotocheck
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>
+    <div>
+      <div class="nm">Tours Panasur E.I.R.L. · Plataforma SSOMA</div>
+      <div style="margin-top:4px">Proyecto Construcción del acceso a la CSF Hanaqpampa · ENGIE Energía Perú</div>
+    </div>
+    <div style="text-align:right">
+      Elaborado por <span style="color:#FBBF24;font-weight:700">Alvaro Ruiz Reyna</span> · Jefe SSOMA · CIP 210152
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
