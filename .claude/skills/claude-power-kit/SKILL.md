@@ -178,6 +178,18 @@ edita skills por sí sola, solo visualizan.
   `skill-observations/`, `.claude/skills/...`) va dentro del repo del proyecto en el que se
   instalan, nunca fuera de él.
 
+## 6. Estado de instalación en este repo (panasur, 2026-09-23/24)
+
+| # | Herramienta | Estado | Detalle |
+|---|-------------|--------|---------|
+| 1 | `skills` CLI | No aplica una instalación fija | El comando `npx skills` funciona (v1.7.0 verificado); se usa bajo demanda con una búsqueda concreta, no se instaló ninguna skill de ejemplo. |
+| 2 | `obra/superpowers` | ✅ Instalado (scope project) | `claude plugin marketplace add obra/superpowers-marketplace --scope project` + `claude plugin install superpowers --scope project -y`, versión 6.4.1. Queda declarado en `.claude/settings.json`, así que cualquier sesión futura de este repo lo carga solo. |
+| 3 | `claude-mem` | ✅ Instalado (scope project) | `claude plugin marketplace add thedotmack/claude-mem --scope project` + `claude plugin install claude-mem@thedotmack --scope project -y`, versión 13.25.3. También en `.claude/settings.json`. |
+| 4 | `Impeccable` | ❌ No se pudo instalar | `npx impeccable install --project -y` falla con `HTTP 403` al descargar el paquete de skills desde `github.com/pbakaus/impeccable/releases`. Se confirmó con `curl` que la propia API de GitHub devuelve 403 en ese endpoint desde este entorno (probable límite anti-abuso sobre la IP compartida del proxy, no un bloqueo de dominio). Pendiente: reintentar más tarde o ejecutar `npx impeccable install --project -y` desde una sesión/máquina con salida de red directa a GitHub. |
+| 5 | `task-observer` | ✅ Instalado (versión de archivo, verificada) | Copiado desde `iamneilroberts/claude-skills` (CC BY 4.0, autor Eoghan Henn / rebelytics.com) a `.claude/skills/task-observer/`, también en `~/.claude/skills/` de este perfil. Se creó `CLAUDE.md` con la línea de activación que pide el propio SKILL.md. El dashboard `localhost:37777` del video sigue sin instalarse: no tiene fuente pública (ver sección 2.5). |
+
+Para completar Impeccable, reintenta `npx impeccable install --project -y` en este repo cuando la red lo permita, o pide ayuda a Claude para diagnosticar el bloqueo de red del entorno.
+
 ## Archivos de esta skill
 
 | Archivo | Cuándo leerlo |
