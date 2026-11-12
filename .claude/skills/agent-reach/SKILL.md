@@ -5,20 +5,23 @@ description: Instala, configura, diagnostica y usa Agent Reach (repo open source
 
 # Agent Reach — que Claude Code lea Internet de verdad
 
-Esta skill nace de un video (TikTok de @revolutia.ai, "Claude tiene un problema gordo"):
-Claude no puede leer las plataformas donde de verdad está la información —Twitter,
-LinkedIn, Reddit, YouTube— y alguien lo resolvió con **Agent Reach**, un repositorio
-open source y gratuito con 38 000 estrellas. Pegas un comando en la terminal, lo metes en
-Claude Code y ya está: acceso real, con cero coste de APIs, en vez de "esos web fetches
-que fallan". La transcripción completa y lo que aparece en pantalla están en
-`references/video-transcripcion.md`.
+Esta skill nace de dos videos del mismo creador, revolutia (TikTok @revolutia.ai, "Claude
+tiene un problema gordo", sept. 2026; YouTube Short @revolutia-ia, "El Repo Que Le Da A
+Claude Ojos Para Leer Internet En Directo", 2026-10-14): Claude no puede leer las
+plataformas donde de verdad está la información —Twitter, LinkedIn, Reddit, YouTube— y
+alguien lo resolvió con **Agent Reach**, un repositorio open source y gratuito (38 000
+estrellas en el primero, 71 000 en el segundo, 111 000 el 2026-11-12). Pegas un comando en
+la terminal, lo metes en Claude Code y ya está: "entras a 17 de las plataformas más
+grandes, todas gratis". Las transcripciones, lo que aparece en pantalla y la verificación
+afirmación por afirmación están en `references/video-transcripcion.md`.
 
-Aquí reproducimos ese flujo con dos matices que el video omite: la instalación es
+Aquí reproducimos ese flujo con los matices que los videos omiten: la instalación es
 **segura por defecto** (solo comprueba; cambiar el sistema exige aprobación explícita del
-usuario) y varias plataformas **necesitan una sesión que solo el usuario puede aportar**
-(cookies de X, login de Reddit o LinkedIn). El valor no está en un scraper concreto: está
-en que una sola herramienta elige, instala y diagnostica el mejor backend de cada
-plataforma, y Claude llama a esas herramientas directamente.
+usuario); varias plataformas **necesitan una sesión que solo el usuario puede aportar**
+(login de X, Reddit, Instagram o LinkedIn en el navegador dedicado de Reach); son 14
+canales, no 17; y el de LinkedIn solo lee empleos, no "saca contactos". El valor no está
+en un scraper concreto: está en que una sola herramienta elige, instala y diagnostica el
+mejor backend de cada plataforma, y Claude llama a esas herramientas directamente.
 
 ---
 
@@ -47,13 +50,22 @@ Qué funciona sin configurar y qué necesita al usuario:
 | Búsqueda web | — | Búsqueda semántica Exa (MCP, sin clave) | se configura sola con `--system` |
 | Twitter / X | Leer un tuit suelto | Buscar, timeline, artículos | cookies vía Cookie-Editor |
 | Reddit | nada (endpoints anónimos bloqueados) | Buscar y leer hilos y comentarios | sesión de Chrome (OpenCLI) o `rdt login` |
-| LinkedIn | Páginas públicas (Jina) | Perfiles, empresas, empleos | login manual en navegador |
+| LinkedIn | Empleos públicos y detalle de la oferta | Búsqueda de empleos dentro del sitio | login en el navegador dedicado (1.6). Perfiles o contactos: no en 1.6.1 |
 | Facebook / Instagram | — | Búsqueda, perfiles, feed, grupos | sesión de Chrome (OpenCLI, solo escritorio) |
 | Podcasts (Xiaoyuzhou) | — | Transcripción con Whisper | clave gratuita de Groq |
 
 Nota 1.6 (2026-10-23): los canales con sesión ya no piden cookies exportadas; la persona
 inicia sesión en el navegador dedicado de Reach con `agent-reach login <canal>`. RSS y
 Exa pasaron a formar parte del canal web.
+
+Nota 1.6.1 (2026-11-01, verificada en el commit c70ae6d del 2026-11-08): 14 canales en
+tres niveles —por defecto (web, YouTube, GitHub, V2EX, Bilibili), opcionales (Reddit,
+LinkedIn, Xiaohongshu, Xueqiu, Boss, Xiaoyuzhou) y experimentales (X, Facebook,
+Instagram)—; 9 piden sesión para todas o parte de sus acciones. Nuevos
+`agent-reach configure browser-port <puerto>` (si otro programa ocupa el 9222) y
+`agent-reach skill unlink <carpeta>`; Reddit cae a la web pública si falla la herramienta
+del sitio. Detalle en `references/video-transcripcion.md` (video 2) y
+`references/troubleshooting-1.6.md`.
 
 ---
 
@@ -153,11 +165,16 @@ pendiente del usuario (logins, claves).
 ### Dónde se puede instalar y dónde no
 
 - PC del usuario, o entorno cloud con red de confianza: ruta completa.
-- Sesión cloud de Claude con red limitada (caso PANASUR, 2026-10-31): el clasificador de
-  seguridad bloquea ejecutar código recién clonado (`uv tool install` o `pip install` del
-  clon) y la política de red corta youtube.com y googlevideo.com. Clonar y documentar sí;
-  instalar y leer YouTube no. Pide al usuario permitir los dominios o usar su máquina, y
-  no busques rodeos: otra sesión u otro sandbox para saltarse la red también se bloquean.
+- Sesión cloud de Claude con red limitada (caso PANASUR): el clasificador de seguridad
+  bloquea ejecutar código recién clonado (`uv tool install` o `pip install` del clon), así
+  que instalar Reach ahí no. Leer YouTube sí, si el usuario permite en el entorno
+  `www.youtube.com`, `youtube.com`, `i.ytimg.com` y `youtubei.googleapis.com` (hecho el
+  2026-11-12 con la herramienta de entorno de la sesión): con eso `yt-dlp
+  --write-auto-subs --skip-download` baja subtítulos y metadatos, y el storyboard
+  (`-f sb0`, servido por i.ytimg.com) sirve de fotogramas; el video en sí no baja
+  (googlevideo.com sigue cerrado). Clonar el repositorio y leer `api.github.com` sí
+  funcionan. No busques rodeos: otra sesión u otro sandbox para saltarse la red también
+  se bloquean.
 
 ---
 
@@ -178,7 +195,7 @@ error en `references/skill-oficial-1.6-en.md`.
 | "Busca en Internet…" | `mcporter call exa.web_search_exa query="..." numResults=5` |
 | "¿Qué dicen en Twitter de…?" | `twitter search "consulta" -n 20` (con `TWITTER_AUTH_TOKEN` y `TWITTER_CT0` exportadas); sin cookies, `exa` con `site:x.com` |
 | "¿Qué dicen en Reddit de…?" | `opencli reddit search "consulta" -f yaml` o `rdt read POST_ID` |
-| "Perfil de LinkedIn de…" | `mcporter call linkedin.get_person_profile linkedin_username="..."`; página pública con Jina |
+| "Empleos en LinkedIn de…" | `agent-reach linkedin jobs "consulta"` (ofertas públicas sin login; dentro del sitio con `agent-reach login linkedin`) y `agent-reach linkedin read URL` para la oferta. Perfiles o contactos: solo la página pública con Jina; 1.6.1 no los lee (la ruta 1.5 `mcporter … get_person_profile` quedó retirada) |
 | "¿Qué publica esta cuenta de Instagram?" | `opencli instagram user cuenta -f yaml` |
 | "¿De qué va este repo / qué issues tiene?" | `gh repo view owner/repo` · `gh issue list -R owner/repo` |
 | "Sigue estas fuentes RSS" | `feedparser` en una línea de Python |
@@ -251,10 +268,10 @@ trimestral) están en `references/casos-innovaq.md`. Resumen:
 | `references/comandos.md` | Referencia rápida en español: rutas de instalación, modos, canales, comando por plataforma, cookies, diagnóstico, problemas frecuentes. Léelo al instalar o al usar un canal por primera vez. |
 | `references/install-guide.md` | Copia literal de la guía oficial `docs/install.md` (2026-09-19). Úsala si no hay red; si hay, descarga la vigente. |
 | `references/update-guide.md` | Copia literal de `docs/update.md`. Para actualizar. |
-| `references/video-transcripcion.md` | Transcripción y cronología del video de origen, con cada afirmación contrastada con el repositorio. |
+| `references/video-transcripcion.md` | Transcripciones y cronologías de los dos videos de origen (TikTok sept. 2026 y Short 2026-10-14), cada afirmación contrastada con el repositorio, y lo que cambió de 1.6.0 a 1.6.1. |
 | `scripts/check_env.sh` | Chequeo de solo lectura del entorno (Python, pipx, Node, gh, CLIs, credenciales). Ejecútalo antes de proponer una ruta de instalación. |
 | `references/casos-innovaq.md` | Siete casos de uso de INNOVAQ y PANASUR con el prompt exacto, los canales que necesita cada uno y el ritmo sugerido. Léelo cuando el pedido sea de escucha social, competencia, prospección, normativa o monitoreo de marca. |
 | `scripts/vigilancia_rss.py` | Digest de novedades normativas y sectoriales desde feeds RSS/Atom peruanos, filtrado por palabras clave. `--hours`, `--feeds`, `--keywords`, `--out`. |
-| `references/install-guide-1.6.md` | Copia literal de la guía oficial 1.6 (`docs/install.md`, commit 14c2134, 2026-10-31): instalar con uv, actualizar y migrar desde 1.5. Manda sobre `install-guide.md`. |
-| `references/troubleshooting-1.6.md` | Copia literal de `docs/troubleshooting.md` 1.6: códigos de error, estados de `doctor`, volver a una versión anterior, proxy. |
-| `references/skill-oficial-1.6-en.md` | La skill que `agent-reach setup` instala en los agentes (inglés): contrato JSON, rutas de lectura, login en el navegador dedicado. Léela para interpretar una respuesta del comando. |
+| `references/install-guide-1.6.md` | Copia literal de la guía oficial 1.6 (`docs/install.md`, commit 14c2134, sin cambios en c70ae6d / 1.6.1): instalar con uv, actualizar y migrar desde 1.5. Manda sobre `install-guide.md`. |
+| `references/troubleshooting-1.6.md` | Copia literal de `docs/troubleshooting.md` 1.6.1 (commit c70ae6d, 2026-11-12): códigos de error, estados de `doctor`, volver a una versión anterior, proxy, puerto del navegador. |
+| `references/skill-oficial-1.6-en.md` | La skill que `agent-reach setup` instala en los agentes (inglés, 1.6.1, commit c70ae6d): contrato JSON, rutas de lectura, login en el navegador dedicado. Léela para interpretar una respuesta del comando. |

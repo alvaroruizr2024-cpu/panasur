@@ -1,6 +1,7 @@
 # Guía oficial de instalación y actualización de Agent Reach 1.6 (copia de referencia)
 
 > Copia literal de `docs/install.md` del repositorio Panniantong/Agent-Reach, commit 14c2134 (2026-10-25), descargada el 2026-10-31.
+> Verificada sin cambios frente al commit c70ae6d (2026-11-08, versión 1.6.1) el 2026-11-12.
 > Desde 1.6 instalar y actualizar comparten esta única guía. Versión vigente: `curl -s https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md`.
 > `comandos.md` conserva la ruta 1.5 (pipx/venv) como referencia histórica.
 

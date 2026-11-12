@@ -1,6 +1,6 @@
 # Skill oficial que instala `agent-reach setup` (1.6, inglés, copia de referencia)
 
-> Copia literal de `agent_reach/skill/SKILL_en.md` del repositorio Panniantong/Agent-Reach, commit 14c2134 (2026-10-25), descargada el 2026-10-31.
+> Copia literal de `agent_reach/skill/SKILL_en.md` del repositorio Panniantong/Agent-Reach, commit c70ae6d (2026-11-08, versión 1.6.1), descargada el 2026-11-12. Sustituye a la copia del commit 14c2134 (2026-10-31); el único cambio es la fila `agent-reach skill unlink`.
 > Es la skill que `agent-reach setup` escribe en `~/.claude/skills/agent-reach/` y en los demás agentes detectados; describe el contrato JSON (`ok`, `items`, `error.code`, `error.hint`). Esta skill de INNOVAQ/PANASUR convive con ella.
 
 ---
@@ -94,6 +94,7 @@ After `agent-reach setup`, show `result.installation_report.markdown` to the use
 | Upgrade / update | `agent-reach update` |
 | Uninstall | show `agent-reach uninstall --dry-run` first, then `agent-reach uninstall` once they confirm |
 | Another AI should use it | `agent-reach skill link <that AI's skills folder>`; `agent-reach skill` shows where it is placed now |
+| An AI should not get it user-wide (e.g. registered per project) | `agent-reach skill unlink <that AI's skills folder>`; setup and update no longer put it back |
 
 Troubleshooting, browser maintenance and uninstall details are in [Maintenance](references/maintenance.md): read it when an update fails, the browser will not start, or the user wants to uninstall.
 

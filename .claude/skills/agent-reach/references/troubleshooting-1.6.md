@@ -1,6 +1,6 @@
 # Solución de problemas de Agent Reach 1.6 (copia de referencia)
 
-> Copia literal de `docs/troubleshooting.md` del repositorio Panniantong/Agent-Reach, commit 14c2134 (2026-10-25), descargada el 2026-10-31.
+> Copia literal de `docs/troubleshooting.md` del repositorio Panniantong/Agent-Reach, commit c70ae6d (2026-11-08, versión 1.6.1), descargada el 2026-11-12. Sustituye a la copia del commit 14c2134 (2026-10-31); lo nuevo es la sección "Browser port" y `agent-reach skill unlink`.
 > Versión vigente: `curl -s https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/troubleshooting.md`.
 
 ---
@@ -59,7 +59,7 @@ Search-only acceptance is shown as search_ready, not proof that every action wor
 
 ## Skill not picked up by an AI
 
-`agent-reach skill` shows the one real copy of the instructions (`~/.agents/skills/agent-reach/SKILL.md`) and the links made for other AIs. An AI not covered automatically: `agent-reach skill link <its skills folder>`. On Windows, where links may not be allowed, a copy is made instead and refreshed by `agent-reach update`.
+`agent-reach skill` shows the one real copy of the instructions (`~/.agents/skills/agent-reach/SKILL.md`) and the links made for other AIs. An AI not covered automatically: `agent-reach skill link <its skills folder>`. To keep an AI from getting it user-wide (for example when you register skills per project), run `agent-reach skill unlink <its skills folder>`; setup and update then leave that folder alone, and `skill link` undoes it. On Windows, where links may not be allowed, a copy is made instead and refreshed by `agent-reach update`.
 
 ## Install, update and roll back
 
@@ -85,6 +85,16 @@ agent-reach configure proxy
 An agent without a terminal prompt can pipe the value in: `agent-reach configure proxy --stdin`.
 
 It is used for every Agent Reach command. An `HTTPS_PROXY` set in your shell takes precedence.
+
+## Browser port
+
+The Agent Reach browser listens on CDP port 9222 by default. If another tool already uses 9222 (another automation browser, a debugging Chrome), browser channels fail with `Port 9222 belongs to an unmanaged browser`. Move Agent Reach to a free port instead of closing that tool:
+
+```bash
+agent-reach configure browser-port 9333
+```
+
+The setting is kept across updates. If the Agent Reach browser is open, it closes and reopens on the new port the next time it is used.
 
 ## Still stuck
 
